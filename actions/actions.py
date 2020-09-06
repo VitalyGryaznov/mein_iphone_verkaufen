@@ -67,7 +67,7 @@ def scrape_search_results_from_the_currenst_search_page(search_term):
         listing.creation_date = date
         listing.search_term = search_term
         driver_helper.close_current_tab_and_go_to_the_first_one()
-        if (mongo_helper.get_listing_by_id(listing._id) & number_of_existing_listings_on_the_page > existing_listings_on_the_page_threshold):
+        if ((len(mongo_helper.get_listing_by_id(listing._id)) > 0) & (number_of_existing_listings_on_the_page > existing_listings_on_the_page_threshold)):
             there_are_new_listings = False
             break
         elif (mongo_helper.get_listing_by_id(listing._id)):
