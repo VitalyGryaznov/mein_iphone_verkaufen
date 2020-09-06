@@ -70,7 +70,7 @@ def scrape_search_results_from_the_currenst_search_page(search_term):
         if (mongo_helper.get_listing_by_id(listing._id) & number_of_existing_listings_on_the_page > existing_listings_on_the_page_threshold):
             there_are_new_listings = False
             break
-        elseif (mongo_helper.get_listing_by_id(listing._id)):
+        elif (mongo_helper.get_listing_by_id(listing._id)):
             number_of_existing_listings_on_the_page += 1
             continue
         mongo_helper.insert_listing(listing)
