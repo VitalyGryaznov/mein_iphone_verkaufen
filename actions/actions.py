@@ -55,6 +55,7 @@ def scrape_search_results_from_the_currenst_search_page(search_term):
             number_of_failed_tries_to_scrape_listing += 1
             if (number_of_failed_tries_to_scrape_listing > error_per_serch_page_threshold):
                 raise Exception("More than {0} scraping failures for the search result page".format(error_per_serch_page_threshold))
+            driver_helper.close_current_tab_and_go_to_the_first_one()
             continue
         
         listing.creation_date = date
