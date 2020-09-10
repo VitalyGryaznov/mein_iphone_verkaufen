@@ -22,7 +22,7 @@ class BasePage(object):
         # This method could be used only when you are 100% sure that page elready loaded
         wait = WebDriverWait(self.driver, 2)
         try:
-            self.wait.until(EC.presence_of_element_located(locator))
+            wait.until(EC.presence_of_element_located(locator))
             return True
         except TimeoutException:
             return False 
