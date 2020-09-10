@@ -25,7 +25,7 @@ class SearchPage(BasePage):
         # -state: Gebraucht
         # -sorting: by publishing date (new first)
         # -category: Handy & Smartphone
-        SEARCH_LINK_PHONE = "https://www.ebay.de/sch/i.html?_from=R40&_nkw={search_term}&_sacat=9355&LH_BIN=1&_sop=10&rt=nc&LH_ItemCondition=3000&_ipg=200"
+        SEARCH_LINK_PHONE = "https://www.ebay.de/sch/i.html?_from=R40&_nkw={search_term}&_sacat=9355&LH_BIN=1&_sop=10&rt=nc&LH_ItemCondition=3000"
         
         driver = DriverHelper().get_driver()
         driver.get(SEARCH_LINK_PHONE.format(search_term=search_term))
