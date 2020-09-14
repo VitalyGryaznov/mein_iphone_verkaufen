@@ -37,4 +37,8 @@ class BasePage(object):
         
     def get_all_elements(self, locator):
         return self.driver.find_elements(locator[0], locator[1])
+    
+    def wait_for_one_element_to_be_presented(self, locator1, locator2):
+        self.wait.until(lambda driver: driver.find_elements(locator1[0],locator1[1]) or driver.find_elements(locator2[0],locator2[1]))
+        
         
