@@ -38,6 +38,7 @@ def scrape_search_results_from_the_currenst_search_page(search_term):
     
     # Could be that scraping of the listing page will fail because of some edge cases and network issues
     # I'd like to have info about the fils in the logs, but still continue scraping if the amount of failures is small
+    # TODO: replace threshold with retry after testing
     number_of_failed_tries_to_scrape_listing = 0
     error_per_serch_page_threshold = 2 # total number of listings on the search page is 50
     
@@ -94,6 +95,7 @@ def check_active_listings(search_term):
     print("There are {0} active listings in db".format(active_listings.count()))
     driver_helper = DriverHelper()
     driver_helper.start_driver()
+    #TODO: replace threshold with retry after testing
     number_of_failed_tries_to_scrape_listing = 0
     error_per_serch_page_threshold = 20
     for listing in active_listings.batch_size(10):
