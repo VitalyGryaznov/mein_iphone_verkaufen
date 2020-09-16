@@ -94,8 +94,20 @@ def check_active_listings(search_term):
     print("There are {0} active listings in db".format(active_listings.count()))
     driver_helper = DriverHelper()
     driver_helper.start_driver()
+    number_of_failed_tries_to_scrape_listing = 0
+    error_per_serch_page_threshold = 20
     for listing in active_listings.batch_size(10):
-        update_active_listing(listing)
+        try:
+            update_active_listing(listing)
+        except Exception as e:
+            trace = traceback.format_exc()
+            print("Failed to scrape the listing")
+            print(e)
+            print(trace)
+            number_of_failed_tries_to_scrape_listing += 1
+            if (number_of_failed_tries_to_scrape_listing > error_per_serch_page_threshold):
+                raise Exception("More than {0} scraping failures for the search term {1}".format(error_per_serch_page_threshold, search_term))
+            continue
     driver_helper.quit_driver()
     mongo_helper.close_connection()
 
