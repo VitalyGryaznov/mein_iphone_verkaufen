@@ -39,12 +39,12 @@ def scrape_search_results_from_the_currenst_search_page(search_term):
     # Could be that scraping of the listing page will fail because of some edge cases and network issues
     # I'd like to have info about the fils in the logs, but still continue scraping if the amount of failures is small
     number_of_failed_tries_to_scrape_listing = 0
-    error_per_serch_page_threshold = 10 # total number of listings on the search page is 50
+    error_per_serch_page_threshold = 2 # total number of listings on the search page is 50
     
     # Sometimes after navigation to the next page we see the last listing form the previos page on it
     # Adding threshold to avoid false conclusion that there are only already saved listings on the page
     number_of_existing_listings_on_the_page = 0
-    existing_listings_on_the_page_threshold = 5
+    existing_listings_on_the_page_threshold = 3
     
     for link_and_date in advert_links_and_dates:
         print("Listing date: {}".format(link_and_date["date"]))
