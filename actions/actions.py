@@ -132,7 +132,7 @@ def update_active_listing(listing):
         closure_reason = listing_page.get_closure_reason()
         final_price = listing_page.get_price()
         fianl_shipping_cost = listing_page.get_shipping_cost()
-        mongo_helper.update_listing(listing["_id"], "last_update", )
+        mongo_helper.update_listing(listing["_id"], "last_update", datetime.datetime.now().strftime('%d. %b. %Y'))
         mongo_helper.update_listing(listing["_id"], "final_price", final_price)
         mongo_helper.update_listing(listing["_id"], "fianl_shipping_cost", fianl_shipping_cost)
         mongo_helper.update_listing(listing["_id"], "closure_reason", closure_reason)
