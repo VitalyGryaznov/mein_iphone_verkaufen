@@ -126,8 +126,9 @@ def update_active_listing(listing):
         except:
             # it's fine if the product is just out of stock
             print("there is no closure data for this closed listing. Checking if it's just out of stock")
-            print(listing_page.get_closure_reason())
-            assert listing_page.get_closure_reason() == 'Dieser Artikel ist nicht vorrätig.'
+            reason = listing_page.get_closure_reason().encode('utf-8').strip()
+            print(reason)
+            assert reason == 'Dieser Artikel ist nicht vorrätig.'
         listing_page.open_original_listing_if_the_link_is_available()
         closure_reason = listing_page.get_closure_reason()
         final_price = listing_page.get_price()
