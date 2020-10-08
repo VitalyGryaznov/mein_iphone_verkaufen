@@ -15,7 +15,7 @@ class ListingPage(BasePage):
     MODEL = (By.XPATH, CHARACTERISTICS_TABLE_BASE_LOCATOR.format(parameter="Modell:"))
     MEMORY = (By.XPATH, CHARACTERISTICS_TABLE_BASE_LOCATOR.format(parameter="Speicherkapazität:"))
     COLOR = (By.XPATH, CHARACTERISTICS_TABLE_BASE_LOCATOR.format(parameter="Farbe:"))
-    CONDITION = (By.XPATH, CHARACTERISTICS_TABLE_BASE_LOCATOR.format(parameter="Artikelzustand:") + " | //*[@class='itemAttr']//th[contains(text(),'Artikelzustand:')]//following-sibling::td[1]")
+    CONDITION = (By.XPATH, "//*[@class='itemAttr']//th[contains(text(),'Hinweise des Verk')]//following-sibling::td[1]" + " | " + CHARACTERISTICS_TABLE_BASE_LOCATOR.format(parameter="Artikelzustand:"))
     MOBILE_OPERATOR = (By.XPATH, CHARACTERISTICS_TABLE_BASE_LOCATOR.format(parameter="Mobilfunkbetreiber:"))
     PRICE = (By.CSS_SELECTOR, "#prcIsum, #prcIsum_bidPrice, .vi-VR-cvipPrice")
     LISTING_ID = (By.CSS_SELECTOR, "#descItemNumber")
