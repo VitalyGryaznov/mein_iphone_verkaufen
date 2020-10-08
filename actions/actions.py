@@ -9,6 +9,9 @@ from helpers.mongo_helper import MongoHelper
 import datetime
 import traceback
 import time
+import locale
+
+locale.setlocale(locale.LC_ALL, 'de_DE')
 
 
 def scrape_new_listings(search_term):

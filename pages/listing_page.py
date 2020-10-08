@@ -3,7 +3,6 @@
 
 from pages.base_page import BasePage
 from selenium.webdriver.common.by import By
-import time
 from models.phone_listing import PhoneListing
 from helpers.driver_helper import DriverHelper
 
