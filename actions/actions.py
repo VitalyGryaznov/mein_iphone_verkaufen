@@ -100,7 +100,7 @@ def check_active_listings(search_term):
     driver_helper.start_driver()
     #TODO: replace threshold with retry after testing
     number_of_failed_tries_to_scrape_listing = 0
-    error_per_serch_page_threshold = 20
+    error_threshold = 5
     for listing in active_listings.batch_size(10):
         try:
             update_active_listing(listing)
@@ -110,8 +110,8 @@ def check_active_listings(search_term):
             print(e)
             print(trace)
             number_of_failed_tries_to_scrape_listing += 1
-            if (number_of_failed_tries_to_scrape_listing > error_per_serch_page_threshold):
-                raise Exception("More than {0} scraping failures for the search term {1}".format(error_per_serch_page_threshold, search_term))
+            if (number_of_failed_tries_to_scrape_listing > error_threshold):
+                raise Exception("More than {0} scraping failures for the search term {1}".format(error_threshold, search_term))
             continue
     driver_helper.quit_driver()
     mongo_helper.close_connection()
@@ -129,8 +129,8 @@ def update_active_listing(listing):
         except:
             # it's fine if the product is just out of stock
             print("there is no closure data for this closed listing. Checking if it's just out of stock")
-            reason = listing_page.get_closure_reason().encode('utf-8').strip()
-            print(reason)
+            reason = listing_page.get_closure_reason()
+            print(reason.encode('utf-8'))
             assert reason == 'Dieser Artikel ist nicht vorrätig.'
         listing_page.open_original_listing_if_the_link_is_available()
         closure_reason = listing_page.get_closure_reason()
