@@ -5,6 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from context import Context
 import os
+import time
 
 class DriverHelper(object):
     # this is driver path. by default it's path to mac driver. could be selected automaticly based on os, but it's out of scope here
@@ -43,3 +44,12 @@ class DriverHelper(object):
         driver = self.get_driver()
         driver.close()
         driver.switch_to.window(window_name=driver.window_handles[0])
+        
+    def take_screenshot(self):
+        screenshot_name = "screenshot{0}.png".format(round(time.time() * 1000))
+        try:
+            self.get_driver().save_screenshot(screenshot_name)
+            print("Screenshot saved {0}".format(screenshot_name))
+        except Exception as e:
+            print("Failed to make a screenshot")
+            print(e)

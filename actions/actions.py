@@ -6,10 +6,12 @@ from helpers.driver_helper import DriverHelper
 from pages.search_page import SearchPage
 from pages.listing_page import ListingPage
 from helpers.mongo_helper import MongoHelper
+from pages.listing_not_found_page import ListingNotFoundPage
 import datetime
 import traceback
 import time
 import locale
+import re
 
 locale.setlocale(locale.LC_ALL, 'de_DE')
 
@@ -63,7 +65,8 @@ def scrape_search_results_from_the_currenst_search_page(search_term):
             listing = listing_page.get_listing_data()
         except Exception as e:
             trace = traceback.format_exc()
-            print("Failed to scrape the listing")
+            print("Failed to scrape the listing {0}".format(link))
+            driver_helper.take_screenshot()
             print(e)
             print(trace)
             number_of_failed_tries_to_scrape_listing += 1
@@ -92,21 +95,23 @@ def scrape_search_results_from_the_currenst_search_page(search_term):
     return there_are_new_listings
 
 def check_active_listings(search_term):
+    flag_old_30_days_old_listings(search_term)
     mongo_helper = MongoHelper()
     mongo_helper.start_client_and_connect()
-    active_listings = mongo_helper.get_active_listings(search_term)
+    active_listings = mongo_helper.get_active_and_not_flaged_as_old_listings(search_term)
     print("There are {0} active listings in db".format(active_listings.count()))
     driver_helper = DriverHelper()
     driver_helper.start_driver()
     #TODO: replace threshold with retry after testing
     number_of_failed_tries_to_scrape_listing = 0
-    error_threshold = 5
+    error_threshold = 20
     for listing in active_listings.batch_size(10):
         try:
             update_active_listing(listing)
         except Exception as e:
             trace = traceback.format_exc()
-            print("Failed to scrape the listing")
+            print("Failed to scrape the listing {0}".format(listing["link"]))
+            driver_helper.take_screenshot()
             print(e)
             print(trace)
             number_of_failed_tries_to_scrape_listing += 1
@@ -120,8 +125,18 @@ def update_active_listing(listing):
     print("Checking listing {0}".format(listing["link"]))
     driver_helper = DriverHelper()
     mongo_helper = MongoHelper()
-    listing_page = ListingPage.open_url(listing["link"])
-    if not listing_page.is_active():
+    try:
+        listing_page = ListingPage.open_url(listing["link"])
+    except:
+        ListingNotFoundPage()
+        mongo_helper.update_listing(listing["_id"], "page_not_found", True)
+        return
+    today = datetime.datetime.now().strftime('%d. %b. %Y')
+    if listing_page.is_active():
+        print("The listing {0} page is ACTIVE".format(listing["link"]))
+        print("Updating listing {0}".format(listing["_id"]))
+        mongo_helper.update_listing(listing["_id"], "last_update", today)
+    else:
         print("The listing {0} page is NOT ACTIVE".format(listing["link"]))
         closure_date = None
         try:
@@ -131,19 +146,33 @@ def update_active_listing(listing):
             print("there is no closure data for this closed listing. Checking if it's just out of stock")
             reason = listing_page.get_closure_reason()
             print(reason.encode('utf-8'))
-            assert reason == 'Dieser Artikel ist nicht vorrätig.'
+            if (reason != 'Dieser Artikel ist nicht vorrätig.'):
+                raise Exception("Closure reason is ont 'out of stock' and closur date not provided")
         listing_page.open_original_listing_if_the_link_is_available()
         closure_reason = listing_page.get_closure_reason()
         final_price = listing_page.get_price()
         fianl_shipping_cost = listing_page.get_shipping_cost()
-        mongo_helper.update_listing(listing["_id"], "last_update", datetime.datetime.now().strftime('%d. %b. %Y'))
+        print("Updating listing {0}".format(listing["_id"]))
+        mongo_helper.update_listing(listing["_id"], "last_update", today)
         mongo_helper.update_listing(listing["_id"], "final_price", final_price)
         mongo_helper.update_listing(listing["_id"], "fianl_shipping_cost", fianl_shipping_cost)
         mongo_helper.update_listing(listing["_id"], "closure_reason", closure_reason)
         mongo_helper.update_listing(listing["_id"], "closure_date", closure_date)
         mongo_helper.update_listing(listing["_id"], "active", False)
         # also would be nice to check if all other parameters of the advert changed and save time of the last check,
-        # but it's for the next itteration
-    else:
-        print("The listing {0} page is ACTIVE".format(listing["link"]))
-        
+        # but it's for the next itteration  
+
+def flag_old_30_days_old_listings(search_term):
+    mongo_helper = MongoHelper()
+    mongo_helper.start_client_and_connect()
+    active_listings = mongo_helper.get_active_and_not_flaged_as_old_listings(search_term)
+    for listing in active_listings.batch_size(10):
+        if ("last_update" in listing):
+            creation_date = datetime.datetime.strptime(re.sub(r"\d{2}\:\d{2}\s", "", listing["creation_date"]), '%d. %b. %Y')
+            last_update = datetime.datetime.strptime(listing["last_update"], '%d. %b. %Y')
+            age = (last_update - creation_date).days
+        else:
+            continue
+        if (age > 30):
+            mongo_helper.update_listing(listing["_id"], "old", True)
+    mongo_helper.close_connection()
