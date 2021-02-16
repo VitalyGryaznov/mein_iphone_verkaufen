@@ -35,6 +35,15 @@ class MongoHelper(object):
         collection = self.get_collection()
         return collection.find({"active": True, "search_term": search_term})
     
+    def get_active_and_not_flaged_as_old_listings(self, search_term):
+        collection = self.get_collection()
+        # {"$exists": False} is correct. We don't have this value by default. Adding True value in case it's old
+        return collection.find({"active": True, "search_term": search_term, "old": {"$exists": False}})    
+    
+    def get_active_singleitem_and_not_flaged_as_old_listings(self, search_term):
+        collection = self.get_collection()
+        return collection.find({"active": True, "search_term": search_term, "old": {"$exists": False}, "multiple_items_available": False})   
+    
     def insert_one(self, post):
         self.get_collection().insert_one(post)
     
@@ -43,4 +52,3 @@ class MongoHelper(object):
     
     def update_listing(self, listing_id, key, value):
         self.get_collection().update_one({"_id": listing_id}, {"$set": {key: value}})
-

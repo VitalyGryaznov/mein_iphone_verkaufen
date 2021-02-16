@@ -26,3 +26,4 @@ class PhoneListing(object):
         self.creation_date = None
         self.closure_date = None
         self.closure_reason = None
+        self.multiple_items_available = None

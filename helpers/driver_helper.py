@@ -20,7 +20,8 @@ class DriverHelper(object):
         options = Options()
         options.add_argument('--disable-gpu')
         options = webdriver.ChromeOptions()
-        options.add_argument('headless')
+        options.add_argument('--headless')
+        options.add_argument('--start-maximized')
         Context.getInstance().driver = webdriver.Chrome(executable_path=self.DRIVER_PATH, chrome_options=options)
 
     def quit_driver(self):

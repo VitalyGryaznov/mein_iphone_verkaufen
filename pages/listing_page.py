@@ -16,7 +16,7 @@ class ListingPage(BasePage):
     COLOR = (By.XPATH, CHARACTERISTICS_TABLE_BASE_LOCATOR.format(parameter="Farbe:"))
     CONDITION = (By.XPATH, "//*[@class='itemAttr']//th[contains(text(),'Hinweise des Verk')]//following-sibling::td[1]" + " | " + CHARACTERISTICS_TABLE_BASE_LOCATOR.format(parameter="Artikelzustand:"))
     MOBILE_OPERATOR = (By.XPATH, CHARACTERISTICS_TABLE_BASE_LOCATOR.format(parameter="Mobilfunkbetreiber:"))
-    PRICE = (By.CSS_SELECTOR, "#prcIsum, #prcIsum_bidPrice, .vi-VR-cvipPrice")
+    PRICE = (By.CSS_SELECTOR, "#prcIsum, #prcIsum_bidPrice, .vi-VR-cvipPrice, #mm-saleDscPrc")
     LISTING_ID = (By.CSS_SELECTOR, "#descItemNumber")
     SHIPPING_COST = (By.CSS_SELECTOR, "#fshippingCost")
     DESCRIPTION_IFARME = (By.CSS_SELECTOR, "#desc_ifr")
@@ -27,11 +27,12 @@ class ListingPage(BasePage):
     SELERS_FEETBACK = (By.CSS_SELECTOR, "#si-fb")
     PHOTOS_FROM_SLIDER = (By.CSS_SELECTOR, "#vi_main_img_fs_slider img")
     MAIN_IMAGE = (By.CSS_SELECTOR, "#icImg")
-    CLOSURE_REASON = (By.CSS_SELECTOR, "#msgPanel .yellow .statusContent") #important to keep 'yellow' here, because empty '#msgPanel .statusContent' also presented on the new listing page
+    CLOSURE_REASON = (By.CSS_SELECTOR, "#msgPanel .yellow .statusContent") #important to keep 'yellow' here, because empty '#msgPanel .statusContent' also presented on the new listing page  //div[@class='itemcard--content']//span[contains(text(),"beendet")]
     CLOSURE_DATE = (By.CSS_SELECTOR, "#bb_tlft")
     CLOSURE_DATE_ON_CLOSED_LISTING_WITH_RECOMENDATION = (By.XPATH, "//span[contains(text(), 'Beendet')]/ancestor::div[contains(@class,'nodestar-item-card-details__condition-cell')]/following-sibling::div//span")
     SHIPPING_FREE_OPTION = (By.CSS_SELECTOR, "#fShippingSvc")
     ORIGINAL_LISTING_LINK = (By.XPATH, "//a[contains(text(),'Originalartikel ansehen')]")
+    NUMBER_OF_ITEMS_IN_SALE = (By.CSS_SELECTOR, "#qtySubTxt")
     
     
     def __init__(self):
@@ -68,6 +69,7 @@ class ListingPage(BasePage):
         listing._id = self.wait_for_element_and_get_text(self.LISTING_ID)
         listing.number_of_reviews = self.wait_for_element_and_get_text(self.NUMBER_OF_REVIEWS)
         listing.photos = self.get_photos()
+        listing.multiple_items_available = self.is_element_visible(self.NUMBER_OF_ITEMS_IN_SALE)
         
         #optional parameters
         listing.model = self.get_optionl_characteristic_value(self.MODEL)

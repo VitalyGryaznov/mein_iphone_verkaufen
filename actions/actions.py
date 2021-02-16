@@ -15,6 +15,14 @@ import re
 
 locale.setlocale(locale.LC_ALL, 'de_DE')
 
+def retry(func, arg):
+    for i in range(0,2):
+        try:
+            return func(arg)
+        except:
+            print("Try {0} failed".format(i))
+    return func(arg)
+
 
 def scrape_new_listings(search_term):
     # open initial search page for search_term with predefined search criterias. See search criterias in SearchPage
@@ -98,7 +106,8 @@ def check_active_listings(search_term):
     flag_old_30_days_old_listings(search_term)
     mongo_helper = MongoHelper()
     mongo_helper.start_client_and_connect()
-    active_listings = mongo_helper.get_active_and_not_flaged_as_old_listings(search_term)
+    # we are taking only active listings, which are not marked as old and or multiitem
+    active_listings = mongo_helper.get_active_singleitem_and_not_flaged_as_old_listings(search_term)
     print("There are {0} active listings in db".format(active_listings.count()))
     driver_helper = DriverHelper()
     driver_helper.start_driver()
@@ -107,7 +116,7 @@ def check_active_listings(search_term):
     error_threshold = 20
     for listing in active_listings.batch_size(10):
         try:
-            update_active_listing(listing)
+            retry(update_active_listing, listing)
         except Exception as e:
             trace = traceback.format_exc()
             print("Failed to scrape the listing {0}".format(listing["link"]))
