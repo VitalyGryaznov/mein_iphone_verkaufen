@@ -5,6 +5,7 @@ import time
 import numpy as np 
 import pickle
 from flask_cors import CORS
+from gevent.pywsgi import WSGIServer
 
 app = Flask(__name__)
 CORS(app)
@@ -185,7 +186,10 @@ def index():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host = '127.0.0.1', port = 8000)
+    app.debug = True 
+    http_server = WSGIServer(('', 8000), app)
+    http_server.serve_forever()
+    #app.run(debug=True, host = '127.0.0.1', port = 8000)
     #app.run()
     
 # predict sale endpoint
