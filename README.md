@@ -1,5 +1,5 @@
 # This repo curretnly contains several parts of the https://www.mein-iphone-verkaufen.de/ project
-# TODO: clean all the parts and move them to the separate repository!
+# TODO: clean all the parts and move each to the separate repository!
 
 # PARTS:
 
