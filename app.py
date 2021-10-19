@@ -35,6 +35,14 @@ models = ['model_5s',
  'model_iphone_11',
  'model_iphone_11_pro',
  'model_iphone_11_pro_max',
+ 'model_iphone_12',
+ 'model_iphone_12_pro',
+ 'model_iphone_12_pro_max',
+ 'model_iphone_12_mini',
+ 'model_iphone_13',
+ 'model_iphone_13_pro',
+ 'model_iphone_13_pro_max',
+ 'model_iphone_13_mini',
  'model_iphone_5',
  'model_iphone_5c',
  'model_iphone_5s',
@@ -76,6 +84,7 @@ colors = [
  'color_weiß']
 
 memory = [
+ 'memory_1TB',
  'memory_128GB',
  'memory_16GB',
  'memory_256GB',

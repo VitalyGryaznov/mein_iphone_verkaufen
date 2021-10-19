@@ -34,9 +34,11 @@ def scrape_new_listings(search_term):
     search_page = SearchPage.open_it_via_url(search_term)
     there_are_new_listings = True
     there_are_more_pages = True
-    while (there_are_new_listings & there_are_more_pages):
+    n_p = 0 #need it for initilal run when the db is empty
+    while (there_are_new_listings & there_are_more_pages & (n_p < 10)):
         there_are_new_listings = scrape_search_results_from_the_currenst_search_page(search_term)
         there_are_more_pages = search_page.go_to_the_next_page_if_available()
+        n_p += 1
         print("There are new pages available: {0}\nThere are new listings: {1}".format(there_are_more_pages, there_are_new_listings))
     driver_helper.quit_driver()
     mongo_helper.close_connection()

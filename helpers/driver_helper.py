@@ -22,6 +22,7 @@ class DriverHelper(object):
         options = webdriver.ChromeOptions()
         options.add_argument('--headless')
         options.add_argument('--start-maximized')
+        options.add_argument("--user-agent='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'")
         Context.getInstance().driver = webdriver.Chrome(executable_path=self.DRIVER_PATH, chrome_options=options)
 
     def quit_driver(self):

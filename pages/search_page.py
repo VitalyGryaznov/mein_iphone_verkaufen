@@ -34,7 +34,14 @@ class SearchPage(BasePage):
         
     def __init__(self):
         super(SearchPage, self).__init__()
-        self.wait_for_element_to_be_visible(self.NUMBER_OF_LISTINGS_PRO_PAGE)
+        try:
+            self.wait_for_element_to_be_visible(self.NUMBER_OF_LISTINGS_PRO_PAGE)
+        except Exception as error: # It's a qquickfix. Needed only because there is less than 50 items for the new iphone search term. 
+            #Still want to wait for NUMBER_OF_LISTINGS_PRO_PAGE for other cases, because it's the last loaded element
+            DriverHelper().take_screenshot()
+            print('Caught this error: ' + repr(error))
+            self.wait_for_element_to_be_visible(self.LISTING_LINKS)
+
     
     # TODO: implement and add after opening page
     #def assert_search_page_opened_with_expected_search_parameters():
