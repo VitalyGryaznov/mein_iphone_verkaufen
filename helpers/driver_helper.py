@@ -47,8 +47,8 @@ class DriverHelper(object):
         driver.close()
         driver.switch_to.window(window_name=driver.window_handles[0])
         
-    def take_screenshot(self):
-        screenshot_name = "screenshot{0}.png".format(round(time.time() * 1000))
+    def take_screenshot(self, file_name = "screenshot"):
+        screenshot_name = "{0}{1}.png".format(file_name, round(time.time() * 1000))
         try:
             self.get_driver().save_screenshot(screenshot_name)
             print("Screenshot saved {0}".format(screenshot_name))

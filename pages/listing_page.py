@@ -31,7 +31,7 @@ class ListingPage(BasePage):
     CLOSURE_DATE = (By.CSS_SELECTOR, "#bb_tlft")
     CLOSURE_DATE_ON_CLOSED_LISTING_WITH_RECOMENDATION = (By.XPATH, "//span[contains(text(), 'Beendet')]/ancestor::div[contains(@class,'nodestar-item-card-details__condition-cell')]/following-sibling::div//span")
     SHIPPING_FREE_OPTION = (By.CSS_SELECTOR, "#fShippingSvc")
-    ORIGINAL_LISTING_LINK = (By.XPATH, "//a[contains(text(),'Originalartikel ansehen')]")
+    ORIGINAL_LISTING_LINK = (By.XPATH, "//a[contains(text(),'Originalartikel ansehen')] | //section[contains(@class, 'page-notice--information')]//a//img")
     NUMBER_OF_ITEMS_IN_SALE = (By.CSS_SELECTOR, "#qtySubTxt")
     
     
@@ -57,6 +57,9 @@ class ListingPage(BasePage):
     
     def open_original_listing_if_the_link_is_available(self):
         self.click_on_element(self.ORIGINAL_LISTING_LINK) if self.is_element_visible(self.ORIGINAL_LISTING_LINK) else print("No 'original  listing' link presented")
+
+    def the_link_to_the_closed_listing_is_available(self):
+        return self.is_element_visible(self.ORIGINAL_LISTING_LINK)
     
     def get_listing_data(self):
         listing = PhoneListing()

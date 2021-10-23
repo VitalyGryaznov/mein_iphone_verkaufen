@@ -153,12 +153,13 @@ def update_active_listing(listing):
         try:
             closure_date =  listing_page.get_closure_date()
         except:
-            # it's fine if the product is just out of stock
-            print("there is no closure data for this closed listing. Checking if it's just out of stock")
-            reason = listing_page.get_closure_reason()
-            print(reason.encode('utf-8'))
-            if (reason != 'Dieser Artikel ist nicht vorrätig.'):
-                raise Exception("Closure reason is ont 'out of stock' and closur date not provided")
+            if (not listing_page.the_link_to_the_closed_listing_is_available()):
+                # it's fine if the product is just out of stock
+                print("there is no closure data for this closed listing. Checking if it's just out of stock")
+                reason = listing_page.get_closure_reason()
+                print(reason.encode('utf-8'))
+                if (reason != 'Dieser Artikel ist nicht vorrätig.'):
+                    raise Exception("Closure reason is ont 'out of stock' and closur date not provided")
         listing_page.open_original_listing_if_the_link_is_available()
         closure_reason = listing_page.get_closure_reason()
         final_price = listing_page.get_price()
