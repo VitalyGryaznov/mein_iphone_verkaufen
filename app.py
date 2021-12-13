@@ -158,9 +158,9 @@ def prepare_data(res, columns = columns):
         print(num)
         data_for_model[columns.index(num)] = res[num]
     data_for_model[columns.index("mean_price")] = set_mean_price(res)
-    if res["condition"] == 1:
+    if res["condition"] == "1":
       data_for_model[columns.index("very_good_condition")] = 1
-    elif res["condition"] == -1:
+    elif res["condition"] == "-1":
       data_for_model[columns.index("very_bad_condition")] = 1
     return data_for_model
 
