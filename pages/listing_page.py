@@ -10,11 +10,12 @@ from helpers.driver_helper import DriverHelper
 class ListingPage(BasePage):
     
     TITLE = (By.CSS_SELECTOR, "#itemTitle")
-    CHARACTERISTICS_TABLE_BASE_LOCATOR = "//*[@class='itemAttr']//td[contains(text(),'{parameter}')]/following-sibling::td[1]"
+    CHARACTERISTICS_TABLE_BASE_LOCATOR = "//*[contains(@class,'ux-layout-section--features')]//span[text()[contains(.,'{parameter}')]]/ancestor::div[@class='ux-labels-values__labels']/following-sibling::div[1]"
+    ##CHARACTERISTICS_TABLE_BASE_LOCATOR = "//*[@class='itemAttr']//td[contains(text(),'{parameter}')]/following-sibling::td[1]"
     MODEL = (By.XPATH, CHARACTERISTICS_TABLE_BASE_LOCATOR.format(parameter="Modell:"))
     MEMORY = (By.XPATH, CHARACTERISTICS_TABLE_BASE_LOCATOR.format(parameter="Speicherkapazität:"))
     COLOR = (By.XPATH, CHARACTERISTICS_TABLE_BASE_LOCATOR.format(parameter="Farbe:"))
-    CONDITION = (By.XPATH, "//*[@class='itemAttr']//th[contains(text(),'Hinweise des Verk')]//following-sibling::td[1]" + " | " + CHARACTERISTICS_TABLE_BASE_LOCATOR.format(parameter="Artikelzustand:"))
+    CONDITION = (By.XPATH, "//*[contains(@class,'ux-layout-section--condition')]//span[text()[contains(.,'Artikelzustand:')]]/ancestor::div[@class='ux-labels-values__labels']/following-sibling::div[1]" + " | " + CHARACTERISTICS_TABLE_BASE_LOCATOR.format(parameter="Artikelzustand:"))
     MOBILE_OPERATOR = (By.XPATH, CHARACTERISTICS_TABLE_BASE_LOCATOR.format(parameter="Mobilfunkbetreiber:"))
     PRICE = (By.CSS_SELECTOR, "#prcIsum, #prcIsum_bidPrice, .vi-VR-cvipPrice, #mm-saleDscPrc")
     LISTING_ID = (By.CSS_SELECTOR, "#descItemNumber")
@@ -32,6 +33,7 @@ class ListingPage(BasePage):
     CLOSURE_DATE_ON_CLOSED_LISTING_WITH_RECOMENDATION = (By.XPATH, "//span[contains(text(), 'Beendet')]/ancestor::div[contains(@class,'nodestar-item-card-details__condition-cell')]/following-sibling::div//span")
     SHIPPING_FREE_OPTION = (By.CSS_SELECTOR, "#fShippingSvc")
     ORIGINAL_LISTING_LINK = (By.XPATH, "//a[contains(text(),'Originalartikel ansehen')] | //section[contains(@class, 'page-notice--information')]//a//img")
+    ORIGINAL_LISTING_LINK_V2 = (By.XPATH, "//a[contains(text(),'Originalangebot aufrufen')]")
     NUMBER_OF_ITEMS_IN_SALE = (By.CSS_SELECTOR, "#qtySubTxt")
     
     
@@ -56,7 +58,13 @@ class ListingPage(BasePage):
         return ListingPage()
     
     def open_original_listing_if_the_link_is_available(self):
-        self.click_on_element(self.ORIGINAL_LISTING_LINK) if self.is_element_visible(self.ORIGINAL_LISTING_LINK) else print("No 'original  listing' link presented")
+        if self.is_element_visible(self.ORIGINAL_LISTING_LINK):
+            self.click_on_element(self.ORIGINAL_LISTING_LINK)
+        elif self.is_element_visible(self.ORIGINAL_LISTING_LINK_V2):
+            self.click_on_element(self.ORIGINAL_LISTING_LINK_V2)
+        else:
+            print("No 'original  listing' link presented")
+                                   
 
     def the_link_to_the_closed_listing_is_available(self):
         return self.is_element_visible(self.ORIGINAL_LISTING_LINK)

@@ -31,6 +31,14 @@ class MongoHelper(object):
         listing = list(collection.find({"_id": listing_id}))
         return listing
     
+    def get_all_listings(self, search_term):
+        collection = self.get_collection()
+        return collection.find({"search_term": search_term})
+    
+    def get_listings_with_empty_model(self, search_term):
+        collection = self.get_collection()
+        return collection.find({"search_term": search_term, "model": None})
+    
     def get_active_listings(self, search_term):
         collection = self.get_collection()
         return collection.find({"active": True, "search_term": search_term})

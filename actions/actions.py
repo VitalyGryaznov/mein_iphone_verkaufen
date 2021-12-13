@@ -12,6 +12,7 @@ import traceback
 import time
 import locale
 import re
+from models.phone_listing import PhoneListing
 
 locale.setlocale(locale.LC_ALL, 'de_DE')
 
@@ -187,4 +188,65 @@ def flag_old_30_days_old_listings(search_term):
             continue
         if (age > 30):
             mongo_helper.update_listing(listing["_id"], "old", True)
+    mongo_helper.close_connection()
+    
+# fixinf model, memory, color, condition, mobile operatorvalues for existin listings
+def fix_existing_listing(listing):
+    print("Checking listing {0}".format(listing["link"]))
+    driver_helper = DriverHelper()
+    mongo_helper = MongoHelper()
+    try:
+        listing_page = ListingPage.open_url(listing["link"])
+    except:
+        ListingNotFoundPage()
+        #mongo_helper.update_listing(listing["_id"], "page_not_found", True)
+        return
+    if listing_page.is_active():
+        print("The listing {0} page is ACTIVE".format(listing["link"]))
+        updated_listing = listing_page.get_listing_data()
+        
+    else:
+        print("The listing {0} page is NOT ACTIVE".format(listing["link"]))
+        closure_date = None
+        try:
+            closure_date =  listing_page.get_closure_date()
+        except:
+            if (not listing_page.the_link_to_the_closed_listing_is_available()):
+                # it's fine if the product is just out of stock
+                print("there is no closure data for this closed listing. Checking if it's just out of stock")
+        listing_page.open_original_listing_if_the_link_is_available()
+        updated_listing = listing_page.get_listing_data()
+        print("Updating listing {0}".format(listing["_id"]))
+    mongo_helper.update_listing(listing["_id"], "model", updated_listing.model)
+    mongo_helper.update_listing(listing["_id"], "memory", updated_listing.memory)
+    mongo_helper.update_listing(listing["_id"], "color", updated_listing.color)
+    mongo_helper.update_listing(listing["_id"], "condition", updated_listing.condition)
+    mongo_helper.update_listing(listing["_id"], "mobile_operator", updated_listing.mobile_operator)
+    
+# I have some fields in db with null value. Need to open listings and fix values to make data usable  
+def fix_listings(search_term):
+    mongo_helper = MongoHelper()
+    mongo_helper.start_client_and_connect()
+    # we are taking all listings
+    listings = mongo_helper.get_listings_with_empty_model(search_term)
+    print("There are {0} listings in db".format(listings.count()))
+    driver_helper = DriverHelper()
+    driver_helper.start_driver()
+    #TODO: replace threshold with retry after testing
+    number_of_failed_tries_to_scrape_listing = 0
+    error_threshold = 40
+    for listing in listings.batch_size(10):
+        try:
+            retry(fix_existing_listing, listing)
+        except Exception as e:
+            trace = traceback.format_exc()
+            print("Failed to scrape the listing {0}".format(listing["link"]))
+            driver_helper.take_screenshot()
+            print(e)
+            print(trace)
+            number_of_failed_tries_to_scrape_listing += 1
+            if (number_of_failed_tries_to_scrape_listing > error_threshold):
+                raise Exception("More than {0} scraping failures for the search term {1}".format(error_threshold, search_term))
+            continue
+    driver_helper.quit_driver()
     mongo_helper.close_connection()
